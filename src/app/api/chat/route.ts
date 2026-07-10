@@ -119,7 +119,7 @@ async function contextAgent(
           input_type: 'search_query',
         }),
       });
-      
+
       if (!embedRes.ok) {
         throw new Error(`Cohere API error: ${embedRes.statusText}`);
       }
@@ -135,7 +135,7 @@ async function contextAgent(
         ORDER BY embedding <=> $1::vector
         LIMIT 3
       `, embeddingString, userId);
-      
+
       if (memories.length > 0) {
         memoryContext = "\\n\\nKNOWN USER PREFERENCES (Must be considered):\\n" + memories.map(m => `- ${m.content}`).join("\\n");
       }
@@ -489,7 +489,7 @@ async function enrichVenuesWithDBRatings(venues: RawVenue[]): Promise<RawVenue[]
           (ratings.filter((r) => r.hasOutlets).length / ratings.length) * 100;
         const ergonomicPct =
           (ratings.filter((r) => r.hasErgonomic).length / ratings.length) * 100;
-        
+
         const validSpeeds = ratings.filter((r) => r.wifiSpeed !== null && r.wifiSpeed > 0).map((r) => r.wifiSpeed as number);
         const avgSpeed = validSpeeds.length > 0 ? Math.round(validSpeeds.reduce((sum, s) => sum + s, 0) / validSpeeds.length) : null;
 
@@ -757,17 +757,17 @@ export async function POST(req: Request) {
     let enrichedVenues: any[] = [];
     let reasoningResult: any = null;
     let isCached = false;
-    
+
     if (orchestratorResult.complexity === "complex") {
       // Try semantic cache
       console.log("Checking Semantic Cache...");
       const cachedResponse = await checkSemanticCache(userMessage, validLocation ? `${validLocation.lat},${validLocation.lng}` : null);
-      
+
       if (cachedResponse) {
         console.log("Semantic Cache Hit!");
         isCached = true;
         reasoningResult = cachedResponse;
-        
+
         agentSteps.push({
           agent: "Context",
           result: { skipped: true, reason: "Cache hit" },
@@ -781,7 +781,7 @@ export async function POST(req: Request) {
           timestamp: Date.now(),
           latencyMs: 1,
         });
-        
+
         agentSteps.push({
           agent: "Reasoning",
           result: {
@@ -901,7 +901,7 @@ export async function POST(req: Request) {
           timestamp: Date.now(),
           latencyMs: Date.now() - reasoningStart,
         });
-        
+
         // Save to cache
         await setSemanticCache(userMessage, validLocation ? `${validLocation.lat},${validLocation.lng}` : null, reasoningResult);
       }
