@@ -7,17 +7,23 @@ on:
 permissions:
   issues: write
   pull-requests: read
+  contents: read
 
 jobs:
   claim:
-    # Only run for comments on open issues (not pull requests) that contain /claim
-    if: !github.event.issue.pull_request && contains(github.event.comment.body, '/claim')
     runs-on: ubuntu-latest
     steps:
       - name: Auto-assign contributor on /claim
         uses: actions/github-script@v9
         with:
           script: |
+            // Ensure this is an issue comment, not a PR comment
+            if (context.payload.issue.pull_request) return;
+
+            const body = context.payload.comment.body || '';
+            // Match /claim anywhere in the comment (case-insensitive)
+            if (!body.toLowerCase().includes('/claim')) return;
+
             const issueNumber = context.payload.issue.number;
             const commenter = context.payload.comment.user.login;
             const assignees = context.payload.issue.assignees || [];
