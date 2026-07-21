@@ -10,14 +10,15 @@ import { isPremiumVenue } from "@/lib/zkp/membership";
 import { WeatherCloudRenderer } from "@/components/WeatherCloudRenderer";
 
 interface PageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
+  const { id } = await params;
   const venue = await prisma.venue.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!venue) {
@@ -58,8 +59,9 @@ export async function generateMetadata({
 }
 
 export default async function VenuePage({ params }: PageProps) {
+  const { id } = await params;
   const venue = await prisma.venue.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!venue) {
