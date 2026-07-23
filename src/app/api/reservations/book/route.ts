@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      const conflict = existingBookings.some((booking) =>
+      const conflict = existingBookings.some((booking: { time: string; duration: any; }) =>
         overlaps(booking.time, booking.duration ?? 60, time, duration),
       );
 
